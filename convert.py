@@ -48,8 +48,8 @@ def get_title(record):
         return None
 
 def clean(element, isAuthor=False):
-    if element is None:
-        return element
+    if element is None or not element.strip():
+        return None
     else:
         element = element.strip()
 
