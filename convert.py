@@ -1,40 +1,44 @@
 from pymarc import MARCReader
-import csv
+import csv, os
 
 def main():
-    filename = 'ab.bib.01.20131101.full'
-    reader = MARCReader(file('data/hlom/' + filename + '.mrc'))
 
-    with open('data/processed/' + filename + '.csv', 'wb') as f:
-        writer = csv.writer(f)
-        writer.writerow(['isbn', 'title', 'author',
-                        'publisher', 'pubplace', 'pubyear',
-                        'extent', 'dimensions', 'subject', 'inclusiondate',
-                        'source', 'library', 'notes'])
+    for filename in os.listdir('data/mrc/'):
+        if os.isdir('data/mrc/' + filename):
+            break
 
-        for i, record in enumerate(reader):
-            #print record
-            pubplace = clean(record['260']['a']) if '260' in record else None
-            extent = clean(record['300']['a'], True) if '300' in record else None
-            dimensions = record['300']['c'] if '300' in record else None
-            subject = record['650']['a'] if '650' in record else None
-            inclusiondate = record['988']['a'] if '988' in record else None
-            source = record['906']['a'] if '906' in record else None
-            library = record['690']['5'] if '690' in record else None
+        reader = MARCReader(file('data/mrc/' + filename))
 
-            notes = " ".join([field['a'] for field in record.notes() if 'a' in field])
+        with open('data/csv/' + os.path.splitext(filename)[0] + '.csv', 'wb') as f:
+            writer = csv.writer(f)
+            writer.writerow(['isbn', 'title', 'author',
+                            'publisher', 'pubplace', 'pubyear',
+                            'extent', 'dimensions', 'subject', 'inclusiondate',
+                            'source', 'library', 'notes'])
 
-            writer.writerow([record.isbn(), get_title(record), clean(record.author(), True),
-                            clean(record.publisher()), pubplace, clean(record.pubyear()),
-                            extent, dimensions, subject, inclusiondate,
-                            source, library, notes])
+            for i, record in enumerate(reader):
+                #print record
+                pubplace = clean(record['260']['a']) if '260' in record else None
+                extent = clean(record['300']['a'], True) if '300' in record else None
+                dimensions = record['300']['c'] if '300' in record else None
+                subject = record['650']['a'] if '650' in record else None
+                inclusiondate = record['988']['a'] if '988' in record else None
+                source = record['906']['a'] if '906' in record else None
+                library = record['690']['5'] if '690' in record else None
 
-            if i % 100 == 0:
-                print filename + ": " + str(i) + " documents processed"
+                notes = " ".join([field['a'] for field in record.notes() if 'a' in field])
+
+                writer.writerow([record.isbn(), get_title(record), clean(record.author(), True),
+                                clean(record.publisher()), pubplace, clean(record.pubyear()),
+                                extent, dimensions, subject, inclusiondate,
+                                source, library, notes])
+
+                if i % 100 == 0:
+                    print filename + ": " + str(i) + " documents processed"
 
 def get_title(record):
     # pymarc has a title() method that is similar to this, but it doesn't
-    # conjoin subtitle and title properly
+    # concatenate subtitle and title properly
     if '245' in record and 'a' in record['245']:
         title = clean(record['245']['a'])
         if 'b' in record['245']:
