@@ -3,7 +3,7 @@ MARC21 to CSV converter
 
 Python script for converting MARC21 files to a saner format (CSV), originally designed for the freely available [Harvard Library Bibliographic Dataset](http://openmetadata.lib.harvard.edu/bibdata).
 
-This script only conserves the following subset of MARC21 records (with only simple post-processing on them):
+This script only conserves the following subset of MARC21 records (with additional simple post-processing on them):
 
 | Field       | Description         |
 | ----------- | ------------------- |
@@ -15,6 +15,7 @@ This script only conserves the following subset of MARC21 records (with only sim
 | 300a        | Extent (eg. pages)  |
 | 300c        | Physical dimensions |
 | 650c        | Subject             |
+| All 5xx     | Notes               |
 | 988a        | Inclusion date      |
 | 906a        | Governing source    |
 | 690 5       | Harvard Library     |
