@@ -4,8 +4,8 @@ import csv, os
 def main():
 
     for filename in os.listdir('data/mrc/'):
-        if os.isdir('data/mrc/' + filename):
-            break
+        if os.path.isdir('data/mrc/' + filename) or filename[0] == '.':
+            continue
 
         reader = MARCReader(file('data/mrc/' + filename))
 
